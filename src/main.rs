@@ -1,3 +1,7 @@
+use std::collections::VecDeque;
+
+
+
 #[derive(Clone)]
 #[derive(Debug)]
 struct Order{
@@ -16,6 +20,8 @@ struct OrderBook<'oblt>{
 
 fn main() {
 
+    let mut deq: VecDeque<Order> = VecDeque::new();
+
     ///////////////////////////
     let mut ask_vecs: Vec<Vec<Order>> = vec![vec![]; 10]; // Each element is an empty `Vec<Order>`
     let mut bid_vecs: Vec<Vec<Order>> = vec![vec![]; 10];
@@ -33,10 +39,14 @@ fn main() {
     // inserter 
     let or_1: Order= Order { id: (1), size: (3) };
     let or_2: Order= Order { id: (2), size: (3) };
-    order_book.ask[0].push(or_1);
+    //order_book.ask[0].push(or_1);
     order_book.ask[0].push(or_2);
     println!("{:?}",*order_book.ask[0]);
     println!("{:?}",order_book.ask[0].pop());
     println!("{:?}",*order_book.ask[0]);
     
+
+    deq.push_back(or_1);
+    println!("{:?}",deq);
+
 }
