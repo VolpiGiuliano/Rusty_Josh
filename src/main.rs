@@ -1,24 +1,6 @@
 use std::collections::VecDeque;
 mod ob_utils;
-
-#[derive(Clone)]
-#[derive(Debug)]
-/// - Side: Bid=true - Ask=false
-struct Order{
-    id:u8,
-    size:u32,
-    price:f64,
-    side: bool
-}
-
-
-#[derive(Debug)]
-struct OrderBook<'oblt>{
-    ask: [&'oblt mut VecDeque<Order>;10],
-    bid: [&'oblt mut VecDeque<Order>;10]
-}
-
-static ORDER_BOOK_LENGHT: usize=10;
+mod stru;
 
 
 
@@ -26,23 +8,23 @@ static ORDER_BOOK_LENGHT: usize=10;
 fn main() {
 
     ///////////////////////////
-    let mut ask_vecs: Vec<VecDeque<Order>> = vec![VecDeque::new(); ORDER_BOOK_LENGHT]; // Each element is an empty `VecDeque<Order>`
-    let mut bid_vecs: Vec<VecDeque<Order>> = vec![VecDeque::new(); ORDER_BOOK_LENGHT];
+    let mut ask_vecs: Vec<VecDeque<stru::Order>> = vec![VecDeque::new(); stru::ORDER_BOOK_LENGHT]; // Each element is an empty `VecDeque<Order>`
+    let mut bid_vecs: Vec<VecDeque<stru::Order>> = vec![VecDeque::new(); stru::ORDER_BOOK_LENGHT];
 
     // Create references to each `Vec<Order>` for `ask` and `bid`
-    let ask_refs: [&mut VecDeque<Order>; ORDER_BOOK_LENGHT] = ask_vecs.iter_mut().collect::<Vec<_>>().try_into().unwrap();
-    let bid_refs: [&mut VecDeque<Order>; ORDER_BOOK_LENGHT] = bid_vecs.iter_mut().collect::<Vec<_>>().try_into().unwrap();
+    let ask_refs: [&mut VecDeque<stru::Order>; stru::ORDER_BOOK_LENGHT] = ask_vecs.iter_mut().collect::<Vec<_>>().try_into().unwrap();
+    let bid_refs: [&mut VecDeque<stru::Order>; stru::ORDER_BOOK_LENGHT] = bid_vecs.iter_mut().collect::<Vec<_>>().try_into().unwrap();
 
     // Initialize the OrderBook struct
-    let mut order_book = OrderBook {
+    let mut order_book = stru::OrderBook {
         ask: ask_refs,
         bid: bid_refs,
     };
     /////////////////////////////////////////////////////////////
 
-    let or_1: Order= Order { id: (1), size: (3), price:(5.0), side:(true)};
-    let or_2: Order= Order { id: (2), size: (3), price:(5.0), side:(true)};
-    let or_3: Order= Order { id: (2), size: (3), price:(7.0), side:(false)};
+    let or_1: stru::Order= stru::Order { id: (1), size: (3), price:(5.0), side:(true)};
+    let or_2: stru::Order= stru::Order { id: (2), size: (3), price:(5.0), side:(true)};
+    let or_3: stru::Order= stru::Order { id: (2), size: (3), price:(7.0), side:(false)};
 
     ob_utils::inserter(or_1, &mut order_book);
     println!("{:?}",order_book);
@@ -56,5 +38,8 @@ fn main() {
     ob_utils::inserter(or_3, &mut order_book);
     println!("{:?}",order_book);
 
+    let prov=ob_utils::top_book(stru::ORDER_BOOK_LENGHT, &mut order_book );
+
+    println!("orderBook: {:?}",prov)
 
 }
