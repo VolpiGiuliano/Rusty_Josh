@@ -48,10 +48,9 @@ pub fn top_book(size_ob: usize,or_bo: &mut stru::OrderBook)->stru::BestAB{
         ask: b_ask,
         bid : b_bid
     };
-    
+
     return best_ba;
 }
-
 
 
 pub fn rem(side:bool,_size:i32,price: usize,or_bo: &mut stru::OrderBook)->stru::Order{
@@ -75,4 +74,26 @@ pub fn inserter(order: stru::Order,or_bo: &mut stru::OrderBook){
         or_bo.ask[order.price as usize].push_back(order);    
     }
     
+}
+
+/// - Side: true=bid false=ask
+pub fn volume_calculator(side: bool,price:usize,or_bo: &mut stru::OrderBook)-> u32{
+    or_bo.borrow_mut();
+
+    let mut size: u32=0;
+    if side{
+    println!("-------------------------"); 
+    for ord in or_bo.bid[price].iter(){
+        size+= ord.size;
+        println!("{:?}",*ord);
+    }
+    println!("-------------------------");
+    } else { 
+        for ord in or_bo.ask[price].iter(){
+            size+= ord.size;
+            println!("{:?}",*ord);
+        }
+        println!("-------------------------");
+    } 
+    return size;
 }

@@ -1,4 +1,6 @@
 use std::collections::VecDeque;
+
+use ob_utils::volume_calculator;
 mod ob_utils;
 mod stru;
 
@@ -22,24 +24,29 @@ fn main() {
     };
     /////////////////////////////////////////////////////////////
 
-    let or_1: stru::Order= stru::Order { id: (1), size: (3), price:(5.0), side:(true)};
+    let or_1: stru::Order= stru::Order { id: (1), size: (4), price:(5.0), side:(true)};
     let or_2: stru::Order= stru::Order { id: (2), size: (3), price:(5.0), side:(true)};
-    let or_3: stru::Order= stru::Order { id: (2), size: (3), price:(7.0), side:(false)};
+    let or_3: stru::Order= stru::Order { id: (3), size: (3), price:(7.0), side:(false)};
+    let or_4: stru::Order= stru::Order { id: (4), size: (10), price:(7.0), side:(false)};
 
-    ob_utils::inserter(or_1, &mut order_book);
-    println!("{:?}",order_book);
-    
+    ob_utils::inserter(or_1, &mut order_book);    
     ob_utils::inserter(or_2, &mut order_book);
-    println!("{:?}",order_book);
-
-    println!("Poped order: {:?}",ob_utils::rem(true,3,5,&mut order_book));
-    println!("{:?}",order_book);
-
     ob_utils::inserter(or_3, &mut order_book);
-    println!("{:?}",order_book);
+
+    ob_utils::inserter(or_4, &mut order_book);
+
+    println!("Size: {}",volume_calculator(true, 5, &mut order_book));
+
+    //println!("Poped order: {:?}",ob_utils::rem(true,3,5,&mut order_book));
+    //println!("Size: {}",volume_calculator(true, 5, &mut order_book));
+    //println!("{:?}",order_book);
+
+    
 
     let prov=ob_utils::top_book(stru::ORDER_BOOK_LENGHT, &mut order_book );
 
-    println!("orderBook: {:?}",prov)
+    println!("orderBook: {:?}",prov);
+    
+    println!("Size: {}",volume_calculator(false, 7, &mut order_book));
 
 }
