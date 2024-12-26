@@ -13,9 +13,11 @@ Single asset exchange usefull to emulate real order book base trading
 ### json
 - https://github.com/serde-rs/serde?tab=readme-ov-file
 
+## Time stamp
+
 ## To Do
 - [x] Vec deque
-- [ ] libs
+- [X] libs
 - [ ] option <struct> return
 
 
@@ -48,3 +50,7 @@ Single asset exchange usefull to emulate real order book base trading
 - **Shorters**: bias agaist market
 - **Big inverstors**: Block trading during the day
 - **Profesionals**: Complicated trades
+- [X] test best orders
+- [ ] add cross in best
+- [ ] test cross
+- [ ] add time id to know the order usefull for cross
