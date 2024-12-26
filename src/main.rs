@@ -12,20 +12,18 @@ struct Order{
 }
 
 
-#[derive(Debug)]
-struct OrderBook<'oblt>{
-    ask: [&'oblt mut VecDeque<Order>;10],
-    bid: [&'oblt mut VecDeque<Order>;10]
-}
-
 static ORDER_BOOK_LENGHT: usize=10;
 
 
+#[derive(Debug)]
+struct OrderBook<'oblt>{
+    ask: [&'oblt mut VecDeque<Order>;ORDER_BOOK_LENGHT],
+    bid: [&'oblt mut VecDeque<Order>;ORDER_BOOK_LENGHT]
+}
 
 
 fn main() {
 
-    ///////////////////////////
     let mut ask_vecs: Vec<VecDeque<Order>> = vec![VecDeque::new(); ORDER_BOOK_LENGHT]; // Each element is an empty `VecDeque<Order>`
     let mut bid_vecs: Vec<VecDeque<Order>> = vec![VecDeque::new(); ORDER_BOOK_LENGHT];
 
