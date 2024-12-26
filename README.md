@@ -12,9 +12,15 @@
 ## json
 - https://github.com/serde-rs/serde?tab=readme-ov-file
 
+## Time stamp
+
 ## To Do
 - [x] Vec deque
-- [ ] libs
+- [X] libs
 - [ ] match
 - [ ] export data
 - [ ] option<struct> return
+- [X] test best orders
+- [ ] add cross in best
+- [ ] test cross
+- [ ] add time id to know the order usefull for cross

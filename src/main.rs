@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use ob_utils::volume_calculator;
 mod ob_utils;
 mod stru;
-
+use ob_utils::top_book;
 
 
 
@@ -28,6 +28,12 @@ fn main() {
     let or_2: stru::Order= stru::Order { id: (2), size: (3), price:(5.0), side:(true)};
     let or_3: stru::Order= stru::Order { id: (3), size: (3), price:(7.0), side:(false)};
     let or_4: stru::Order= stru::Order { id: (4), size: (10), price:(7.0), side:(false)};
+    let or_5: stru::Order= stru::Order { id: (5), size: (1), price:(8.0), side:(false)};
+    let or_6: stru::Order= stru::Order { id: (6), size: (1), price:(4.0), side:(true)};
+    let or_7: stru::Order= stru::Order { id: (7), size: (2), price:(3.0), side:(false)};
+    let or_8: stru::Order= stru::Order { id: (8), size: (2), price:(9.0), side:(true)};
+
+
 
     ob_utils::inserter(or_1, &mut order_book);    
     ob_utils::inserter(or_2, &mut order_book);
@@ -39,14 +45,33 @@ fn main() {
 
     //println!("Poped order: {:?}",ob_utils::rem(true,3,5,&mut order_book));
     //println!("Size: {}",volume_calculator(true, 5, &mut order_book));
-    //println!("{:?}",order_book);
+    println!("{:?}",order_book);
 
     
 
     let prov=ob_utils::top_book(stru::ORDER_BOOK_LENGHT, &mut order_book );
 
-    println!("orderBook: {:?}",prov);
+    println!("best orderBook: {:?}",prov);
     
     println!("Size: {}",volume_calculator(false, 7, &mut order_book));
+    
+
+    // test deep
+    ob_utils::inserter(or_5, &mut order_book);
+    ob_utils::inserter(or_6, &mut order_book);
+
+    println!("{:?}",order_book);
+    println!("best orderBook: {:?}", top_book(stru::ORDER_BOOK_LENGHT, &mut order_book ));
+    println!("Size: {}",volume_calculator(false, 7, &mut order_book));
+
+    // test cross
+
+    ob_utils::inserter(or_7, &mut order_book);
+    ob_utils::inserter(or_8, &mut order_book);
+
+    println!("{:?}",order_book);
+    println!("best orderBook: {:?}",top_book(stru::ORDER_BOOK_LENGHT, &mut order_book ));
+    println!("Size: {}",volume_calculator(false, 7, &mut order_book));
+
 
 }
