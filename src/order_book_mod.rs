@@ -13,6 +13,52 @@ pub struct Order {
     pub side: bool,
 }
 
+
+/// # Best Bid & Ask
+/// 
+/// Top view of the orderbook with the best bid and ask with
+/// the volume and state of the spread.
+/// 
+/// ## state 
+/// 
+/// Flag usefull to know the state of the order book.
+/// *IMPORTANT*: The in case of a cross spread you need to consider the price
+/// of the older resting order for the transition
+/// 
+/// - 1 -> Equilibrium: we have a Bid price < Ask price
+/// - 2 -> Contact: Bid=Ask
+/// - 3 -> Cross Bid: a new Bid order crosses the spread (Ask is the older resting order)
+/// - 4 -> Cross Ask: a new Ask order crosses the spread (Bid is the older resting order)
+/// 
+/// The 3 and 4 are useless if the trades are made only during the new order handling
+#[derive(Debug)]
+pub struct BestAB{
+    pub ask_p:usize,
+    pub bid_p:usize,
+    pub ask_s:u32,
+    pub bid_s:u32,
+    pub state:u8
+}
+
+
+pub struct result_match{
+    top_book:BestAB,
+    O_bid: VecDeque<Order>,
+    O_ask: VecDeque<Order>,
+    is_match: bool
+}
+
+
+/// # Order Book
+/// The most important part of the exchange
+/// ## Functions
+/// - ### new() -> OrderBook 
+/// 
+/// - ### inserter(&mut self,order: Order)
+/// 
+/// - ### rem(&mut self,side:bool,price: usize)->Order
+/// 
+/// - ### top_book(&self)->BestAB
 #[derive(Debug)]
 pub struct OrderBook {
     pub ask: [Box<VecDeque<Order>>; ORDER_BOOK_LENGTH],
@@ -20,8 +66,8 @@ pub struct OrderBook {
 }
 
 
-
 impl OrderBook {
+
     pub fn new() -> OrderBook {
         // Create fixed-length arrays of `Box<VecDeque<Order>>`
         let ask = array_init::array_init(|_| Box::new(VecDeque::new()));
@@ -31,8 +77,6 @@ impl OrderBook {
     }
 
     pub fn inserter(&mut self,order: Order){
-
-        //self.borrow_mut();
     
         if order.side==true {
             self.bid[order.price as usize].push_back(order);
@@ -42,8 +86,8 @@ impl OrderBook {
         
     }
 
-
-    pub fn rem(&mut self,side:bool,_size:i32,price: usize)->Order{
+    /// _size: remove
+    pub fn rem(&mut self,side:bool,price: usize)->Order{
        
         if side==true {
             self.bid[price].pop_front().unwrap()
@@ -54,12 +98,8 @@ impl OrderBook {
     }
 
 
-
-
     pub fn top_book(&self)->BestAB{
 
-        
-    
         let (mut b_ask, mut b_bid): (usize, usize) = (0, 0);
         let mut state_ob:u8=0;
         let mut found_bid = false;
@@ -130,34 +170,36 @@ impl OrderBook {
         return size;
     }
 
+    pub fn matching(&mut self)->result_match{
+        let top= self.top_book();
+        if top.state==1{
+            result_match{
+                top_book:top,
+                O_bid: VecDeque::new(),
+                O_ask: VecDeque::new(),
+                is_match:false
+            }
+        }else{
+            let mut ask_v:VecDeque<Order>=VecDeque::new();
+            let mut bid_v:VecDeque<Order>=VecDeque::new();
 
-}
+            let bid_vol:u32=0;
+            let bid_vol:u32=0;
 
+            if top.state==1{
+                bid_v.push_back(self.rem(true, top.bid_p)); 
+                ask_v.push_back(self.rem(false, top.ask_p)); 
+            };
 
+            result_match{
+                top_book:top,
+                O_bid: bid_v,
+                O_ask: ask_v,
+                is_match:true
+            }
+        }
+    }
 
-
-/// # Best Bid & Ask
-/// 
-/// Top view of the orderbook with the best bid and ask with
-/// the volume and state of the spread.
-/// 
-/// ## state 
-/// 
-/// Flag usefull to know the state of the order book.
-/// *IMPORTANT*: The in case of a cross spread you need to consider the price
-/// of the older resting order for the transition
-/// 
-/// - 1 -> Equilibrium: we have a Bid price < Ask price
-/// - 2 -> Contact: Bid=Ask
-/// - 3 -> Cross Bid: a new Bid order crosses the spread (Ask is the older resting order)
-/// - 3 -> Cross Ask: a new Ask order crosses the spread (Bid is the older resting order)
-#[derive(Debug)]
-pub struct BestAB{
-    pub ask_p:usize,
-    pub bid_p:usize,
-    pub ask_s:u32,
-    pub bid_s:u32,
-    pub state:u8
 }
 
 

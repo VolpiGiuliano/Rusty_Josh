@@ -13,12 +13,14 @@ Single asset exchange usefull to emulate real order book base trading
 ### json
 - https://github.com/serde-rs/serde?tab=readme-ov-file
 
-## Time stamp
+
 
 ## To Do
 - [x] Vec deque
 - [X] libs
-- [ ] option <struct> return
+- [ ] option `<struct>` return
+- [ ] New order handling (matching func)
+- [ ] Timestamp
 
 
 ## Road Map
@@ -26,9 +28,10 @@ Single asset exchange usefull to emulate real order book base trading
 2) book visual for debug
 3) Matching engine
 4) Market data export
-5) Local participant (co-location). Json based messages to be globally compatible
-6) remote connection (http). 
-7) Account manager (unsafe for testing)
+5) Json based messages to be globally compatible
+6) Local participant (co-location)
+7) remote connection (http). 
+8) Account manager (unsafe for testing)
 
 
 ## Data Visual
@@ -54,3 +57,9 @@ Single asset exchange usefull to emulate real order book base trading
 - [ ] add cross in best
 - [ ] test cross
 - [ ] add time id to know the order usefull for cross
+
+# Matching Engine
+
+![Schema ME](/img/New%20order%20Match.png)
+
+## Time stamp
