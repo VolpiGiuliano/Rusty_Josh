@@ -70,4 +70,29 @@ Single asset exchange usefull to emulate real order book base trading
 
 ![Schema ME](/img/New%20order%20Match.png)
 
-## Time stamp
+## Time stamps
+
+An Order should have multiple timestamps for:
+- Arriving at the Exchange
+- Been inserted to the Book
+- Full or partial fill
+- Modifications
+- Cancelations 
+
+This multiple possibilities require a flexible array, a good one can be 
+a simple Queue that preserves the order of the events.
+
+
+```Rust
+pub struct Order {
+    pub id: u8,
+    pub size: u32,
+    pub price: f64,
+    pub side: bool,
+    pub time: VecDeque<TimeStamp>
+}
+pub struct TimeStamp {
+    pub event: u8
+    pub time: Timestamp
+}
+```
