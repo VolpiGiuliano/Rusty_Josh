@@ -57,10 +57,7 @@ impl BestAB {
 
 
 pub struct ResultMatch{
-pub struct ResultMatch{
     top_book:BestAB,
-    o_bid: VecDeque<Order>,
-    o_ask: VecDeque<Order>,
     o_bid: VecDeque<Order>,
     o_ask: VecDeque<Order>,
     is_match: bool
@@ -190,14 +187,11 @@ impl OrderBook {
     }
 
     pub fn matching(&mut self)->ResultMatch{
-    pub fn matching(&mut self)->ResultMatch{
         let top= self.top_book();
         if top.state==1{
-            ResultMatch{
+
             ResultMatch{
                 top_book:top,
-                o_bid: VecDeque::new(),
-                o_ask: VecDeque::new(),
                 o_bid: VecDeque::new(),
                 o_ask: VecDeque::new(),
                 is_match:false
@@ -214,11 +208,9 @@ impl OrderBook {
                 ask_v.push_back(self.rem(false, top.ask_p)); 
             };
 
-            ResultMatch{
+
             ResultMatch{
                 top_book:top,
-                o_bid: bid_v,
-                o_ask: ask_v,
                 o_bid: bid_v,
                 o_ask: ask_v,
                 is_match:true
