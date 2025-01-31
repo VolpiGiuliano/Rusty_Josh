@@ -9,7 +9,7 @@ pub const ORDER_BOOK_LENGTH: usize = 10;
 pub struct Order {
     pub id: u8,
     pub size: u32,
-    pub price: f64,
+    pub price: u64,
     pub side: bool,
 }
 
@@ -40,11 +40,26 @@ pub struct BestAB{
     pub state:u8
 }
 
+impl BestAB {
 
-pub struct result_match{
+    pub fn new() -> BestAB {
+
+    BestAB {
+        ask_p:0,
+        bid_p:0,
+        ask_s:0,
+        bid_s:0,
+        state:0
+        }
+    
+    }
+}
+
+
+pub struct ResultMatch{
     top_book:BestAB,
-    O_bid: VecDeque<Order>,
-    O_ask: VecDeque<Order>,
+    o_bid: VecDeque<Order>,
+    o_ask: VecDeque<Order>,
     is_match: bool
 }
 
@@ -63,6 +78,7 @@ pub struct result_match{
 pub struct OrderBook {
     pub ask: [Box<VecDeque<Order>>; ORDER_BOOK_LENGTH],
     pub bid: [Box<VecDeque<Order>>; ORDER_BOOK_LENGTH],
+    pub top_book : BestAB
 }
 
 
@@ -72,8 +88,8 @@ impl OrderBook {
         // Create fixed-length arrays of `Box<VecDeque<Order>>`
         let ask = array_init::array_init(|_| Box::new(VecDeque::new()));
         let bid = array_init::array_init(|_| Box::new(VecDeque::new()));
-
-        OrderBook { ask, bid }
+        let top_book= BestAB::new();
+        OrderBook { ask, bid ,top_book }
     }
 
     pub fn inserter(&mut self,order: Order){
@@ -170,13 +186,13 @@ impl OrderBook {
         return size;
     }
 
-    pub fn matching(&mut self)->result_match{
+    pub fn matching(&mut self)->ResultMatch{
         let top= self.top_book();
         if top.state==1{
-            result_match{
+            ResultMatch{
                 top_book:top,
-                O_bid: VecDeque::new(),
-                O_ask: VecDeque::new(),
+                o_bid: VecDeque::new(),
+                o_ask: VecDeque::new(),
                 is_match:false
             }
         }else{
@@ -191,10 +207,10 @@ impl OrderBook {
                 ask_v.push_back(self.rem(false, top.ask_p)); 
             };
 
-            result_match{
+            ResultMatch{
                 top_book:top,
-                O_bid: bid_v,
-                O_ask: ask_v,
+                o_bid: bid_v,
+                o_ask: ask_v,
                 is_match:true
             }
         }

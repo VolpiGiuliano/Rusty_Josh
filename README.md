@@ -22,6 +22,14 @@ Single asset exchange usefull to emulate real order book base trading
 - [ ] New order handling (matching func)
 - [ ] Timestamp
 
+## Ongoing
+- Match incoming Order
+- nesting Best BA into Orderbook (how to return it?)
+
+## Ideas
+- Add Best BA to the orderbook struct
+- Put in the Order Book struct all the functions to avoid complicating the code with Ownership
+- Add a general check in the OrderBook to see if there are some problems
 
 ## Road Map
 1) Orderbook functionalities: insert, remove quotes, best b/a
