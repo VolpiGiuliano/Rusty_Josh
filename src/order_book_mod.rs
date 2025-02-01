@@ -9,7 +9,7 @@ pub const ORDER_BOOK_LENGTH: usize = 10;
 pub struct Order {
     pub id: u8,
     pub size: u32,
-    pub price: u64,
+    pub price: u32,
     pub side: bool,
 }
 
@@ -114,7 +114,7 @@ impl OrderBook {
     }
 
 
-    pub fn top_book(&self)->BestAB{
+    pub fn top_book_refresh(&mut self){
 
         let (mut b_ask, mut b_bid): (usize, usize) = (0, 0);
         let mut state_ob:u8=0;
@@ -161,8 +161,8 @@ impl OrderBook {
             bid_s: self.volume_calculator(true,b_bid),
             state: state_ob
         };
-    
-        return best_ba;
+        
+        self.top_book= best_ba;
     }
 
 
@@ -185,6 +185,29 @@ impl OrderBook {
         } 
         return size;
     }
+
+
+    pub fn NewOrderHandling(&mut self,new_order:Order){
+        // New Bid, examine the Ask
+        if new_order.side && new_order.price >= self.top_book.ask_p as u32{
+            println!("New bid");
+
+
+        }else if new_order.side==false && new_order.price <= self.top_book.bid_p as u32 {// New Bid, examine the Ask
+            println!("New ask");
+
+
+
+        } else {
+            self.inserter(new_order);
+            println!("Inserted no match");
+            return
+        }
+
+    }
+
+
+/*
 
     pub fn matching(&mut self)->ResultMatch{
         let top= self.top_book();
@@ -218,6 +241,7 @@ impl OrderBook {
         }
     }
 
+*/
 }
 
 

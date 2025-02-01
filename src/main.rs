@@ -20,6 +20,8 @@ fn main() {
     order_book.inserter(or_3);
     order_book.inserter(or_4);
 
+    order_book.top_book_refresh();
+    println!("TOP: {:?}",order_book.top_book);
 
     println!("{:?}",order_book);
 
@@ -27,7 +29,14 @@ fn main() {
 
     println!("Poped order: {:?}",order_book.rem(true,5));
     println!("Size: {}",order_book.volume_calculator(true, 5));
-    
-    println!("TOP: {:?}",order_book.top_book());
+    order_book.top_book_refresh();
+    println!("TOP: {:?}",order_book.top_book);
+
+    println!("--------------------------------------------");
+
+    order_book.NewOrderHandling(or_5);
+    order_book.NewOrderHandling(or_6);
+    order_book.NewOrderHandling(or_7);
+    order_book.NewOrderHandling(or_8);
 
 }

@@ -24,7 +24,7 @@ Single asset exchange usefull to emulate real order book base trading
 
 ## Ongoing
 - Match incoming Order
-- nesting Best BA into Orderbook (how to return it?)
+
 
 ## Ideas
 - Add Best BA to the orderbook struct
@@ -61,14 +61,41 @@ Single asset exchange usefull to emulate real order book base trading
 - **Shorters**: bias agaist market
 - **Big inverstors**: Block trading during the day
 - **Profesionals**: Complicated trades
-- [X] test best orders
-- [ ] add cross in best
-- [ ] test cross
-- [ ] add time id to know the order usefull for cross
 
-# Matching Engine
+## Matching Engine
+- Need a vector with struct to keep all matches containing:
+    - ask/bid gen info
+    - partial fil volume
+    - who was the resting order
+    - time stamp
+
+- for partial fills ad a letter to the end of ID
+
+```Rust
+/// - resting:
+///     - true = bid was the resting order
+///     - false = ask was the resting order
+pub struct Match{
+    id_b:,
+    id_a:,
+    volume_filled:u32,
+    price:u32,
+    time_stamp:,
+    resting: bool
+}
+```
 
 ![Schema ME](/img/New%20order%20Match.png)
+
+
+## ID
+### Format
+`123456789-55555-11-22`
+1) Order code
+2) Partecipant
+3) Modification
+4) Partial fill
+
 
 ## Time stamps
 
