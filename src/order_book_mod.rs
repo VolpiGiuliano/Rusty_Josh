@@ -4,14 +4,32 @@ use std::usize;
 
 pub const ORDER_BOOK_LENGTH: usize = 10;
 
-#[derive(Clone, Debug)]
+#[derive(Clone,Copy, Debug)]
 /// - Side: Bid=true - Ask=false
+/// - modify: Starts at 0 and at every modification is added by 1
+/// - partial: 0 if no partial match was done, increment by 1 at every partial match
 pub struct Order {
     pub id: u8,
+    pub modify: u8,
+    pub partial: u8,
     pub size: u32,
     pub price: u32,
-    pub side: bool,
+    pub side: bool
 }
+
+
+/// - resting:
+///     - true = bid was the resting order
+///     - false = ask was the resting order
+pub struct Match{
+    id_b:u8,
+    id_a:u8,
+    volume_filled:u32,
+    price:u32,
+//    time_stamp:,
+    resting: bool
+}
+
 
 
 /// # Best Bid & Ask
@@ -187,61 +205,78 @@ impl OrderBook {
     }
 
 
-    pub fn NewOrderHandling(&mut self,new_order:Order){
-        // New Bid, examine the Ask
-        if new_order.side && new_order.price >= self.top_book.ask_p as u32{
-            println!("New bid");
+    pub fn new_order_handling(&mut self,mut new_order:Order)->Option<Match>{
+        let mut loop_con:bool=true;
+        //let mut match_order;
+
+        // no loop, try to run the same function with a new order
+        while  loop_con {
+            
+            // New Bid, examine the Ask
+            // there is a hit
+            if new_order.side && new_order.price >= self.top_book.ask_p as u32{
+                println!("New bid");
+            
+                // Modify rest
+                if new_order.size < self.ask[self.top_book.ask_p].front().unwrap().size {
+                    
+                    // Safe
+                    if let Some(rest_order) = self.ask[self.top_book.ask_p].front_mut(){
+                        rest_order.size -= new_order.size;
+                        
+                        return Some(Match{
+                            id_b:new_order.id,
+                            id_a:self.ask[self.top_book.ask_p].front().unwrap().id,
+                            volume_filled:new_order.size ,
+                            price:self.ask[self.top_book.ask_p].front().unwrap().price,
+                        //    time_stamp:,
+                            resting: false
+                        });
+                        
+                    }
+                    
+
+                //------------------------------------------------------------------------------
+                // Modify new
+                }else if  new_order.size > self.ask[self.top_book.ask_p].front().unwrap().size {
+                    new_order.size -=self.ask[self.top_book.ask_p].front().unwrap().size;
+                    Match{
+                        id_b:new_order.id,
+                        id_a:self.ask[self.top_book.ask_p].front().unwrap().id,
+                        volume_filled:self.ask[self.top_book.ask_p].front().unwrap().size,
+                        price:self.ask[self.top_book.ask_p].front().unwrap().price,
+                    //    time_stamp:,
+                        resting: false
+                    };
+                    self.ask[self.top_book.ask_p].pop_front();
+                    
+                }else if  new_order.size == self.ask[self.top_book.ask_p].front().unwrap().size {
+                    self.ask[self.top_book.ask_p].pop_front();
 
 
-        }else if new_order.side==false && new_order.price <= self.top_book.bid_p as u32 {// New Bid, examine the Ask
-            println!("New ask");
+
+                }
+///////////////////////////////////////////////////////////////////////////////////////    
+            }else if new_order.side==false && new_order.price <= self.top_book.bid_p as u32 {// New Bid, examine the Ask
+                println!("New ask");
 
 
 
-        } else {
-            self.inserter(new_order);
-            println!("Inserted no match");
-            return
-        }
+            } else {
+                self.inserter(new_order);
+                println!("Inserted no match");
+                self.top_book_refresh();
+                return None
+            }
 
+            self.top_book_refresh();
+        
+        } return None
+    
     }
 
 
-/*
 
-    pub fn matching(&mut self)->ResultMatch{
-        let top= self.top_book();
-        if top.state==1{
-
-            ResultMatch{
-                top_book:top,
-                o_bid: VecDeque::new(),
-                o_ask: VecDeque::new(),
-                is_match:false
-            }
-        }else{
-            let mut ask_v:VecDeque<Order>=VecDeque::new();
-            let mut bid_v:VecDeque<Order>=VecDeque::new();
-
-            let bid_vol:u32=0;
-            let bid_vol:u32=0;
-
-            if top.state==1{
-                bid_v.push_back(self.rem(true, top.bid_p)); 
-                ask_v.push_back(self.rem(false, top.ask_p)); 
-            };
-
-
-            ResultMatch{
-                top_book:top,
-                o_bid: bid_v,
-                o_ask: ask_v,
-                is_match:true
-            }
-        }
-    }
-
-*/
 }
 
 

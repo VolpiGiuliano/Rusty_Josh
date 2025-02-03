@@ -24,7 +24,7 @@ Single asset exchange usefull to emulate real order book base trading
 
 ## Ongoing
 - Match incoming Order
-
+- Engine return a list of match struct for flexibility
 
 ## Ideas
 - Add Best BA to the orderbook struct
@@ -63,6 +63,8 @@ Single asset exchange usefull to emulate real order book base trading
 - **Profesionals**: Complicated trades
 
 ## Matching Engine
+- incoming orders
+- Check if the new order ID is in the list of processed orders
 - Need a vector with struct to keep all matches containing:
     - ask/bid gen info
     - partial fil volume
@@ -123,3 +125,6 @@ pub struct TimeStamp {
     pub time: Timestamp
 }
 ```
+
+
+![Overview](/img/Overview.png)

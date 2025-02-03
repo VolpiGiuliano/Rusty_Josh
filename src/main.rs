@@ -1,3 +1,7 @@
+use std::collections::VecDeque;
+
+use order_book_mod::Order;
+
 mod order_book_mod;
 
 
@@ -5,15 +9,26 @@ fn main() {
 
     let mut order_book = order_book_mod::OrderBook::new();
 
-    let or_1: order_book_mod::Order= order_book_mod::Order { id: (1), size: (4), price:(5), side:(true)};
-    let or_2: order_book_mod::Order= order_book_mod::Order { id: (2), size: (3), price:(5), side:(true)};
-    let or_3: order_book_mod::Order= order_book_mod::Order { id: (3), size: (3), price:(7), side:(false)};
-    let or_4: order_book_mod::Order= order_book_mod::Order { id: (4), size: (9), price:(7), side:(false)};
-    let or_5: order_book_mod::Order= order_book_mod::Order { id: (5), size: (1), price:(8), side:(false)};
-    let or_6: order_book_mod::Order= order_book_mod::Order { id: (6), size: (1), price:(4), side:(true)};
-    let or_7: order_book_mod::Order= order_book_mod::Order { id: (7), size: (2), price:(3), side:(false)};
-    let or_8: order_book_mod::Order= order_book_mod::Order { id: (8), size: (2), price:(9), side:(true)};
+    let or_1: order_book_mod::Order= order_book_mod::Order { id: (1),modify: (0),partial:(0), size: (4), price:(5), side:(true)};
+    let or_2: order_book_mod::Order= order_book_mod::Order { id: (2),modify: (0),partial:(0), size: (3), price:(5), side:(true)};
+    let or_3: order_book_mod::Order= order_book_mod::Order { id: (3),modify: (0),partial:(0), size: (3), price:(7), side:(false)};
+    let or_4: order_book_mod::Order= order_book_mod::Order { id: (4),modify: (0),partial:(0), size: (9), price:(7), side:(false)};
+    let or_5: order_book_mod::Order= order_book_mod::Order { id: (5),modify: (0),partial:(0), size: (1), price:(8), side:(false)};
+    let or_6: order_book_mod::Order= order_book_mod::Order { id: (6),modify: (0),partial:(0), size: (1), price:(4), side:(true)};
+    let or_7: order_book_mod::Order= order_book_mod::Order { id: (7),modify: (0),partial:(0), size: (2), price:(3), side:(false)};
+    let or_8: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
+    let or_9: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
 
+    let mut incoming_orders: VecDeque<Order>=VecDeque::new();
+    incoming_orders.push_back(or_1);
+    incoming_orders.push_back(or_2);
+    incoming_orders.push_back(or_3);
+    incoming_orders.push_back(or_4);
+    incoming_orders.push_back(or_5);
+    incoming_orders.push_back(or_6);
+    incoming_orders.push_back(or_7);
+    incoming_orders.push_back(or_8);
+    incoming_orders.push_back(or_9);
 
     order_book.inserter(or_1);
     order_book.inserter(or_2);
@@ -34,9 +49,16 @@ fn main() {
 
     println!("--------------------------------------------");
 
-    order_book.NewOrderHandling(or_5);
-    order_book.NewOrderHandling(or_6);
-    order_book.NewOrderHandling(or_7);
-    order_book.NewOrderHandling(or_8);
+    order_book.new_order_handling(or_5);
+    order_book.new_order_handling(or_6);
+    order_book.new_order_handling(or_7);
+    println!("--------------------------------------------");
+    println!("{:?}",order_book);
+    println!("TOP: {:?}",order_book.top_book);
+    order_book.new_order_handling(or_8);
+    println!("TOP: {:?}",order_book.top_book);
+    println!("{:?}",order_book);
+    println!("--------------------------------------------");
+
 
 }
