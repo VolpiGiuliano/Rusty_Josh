@@ -13,18 +13,23 @@ Single asset exchange usefull to emulate real order book base trading
 ### json
 - https://github.com/serde-rs/serde?tab=readme-ov-file
 
+### Web API
+- https://actix.rs/docs/
+
 
 
 ## To Do
 - [x] Vec deque
 - [X] libs
-- [ ] option `<struct>` return
-- [ ] New order handling (matching func)
+- [X] New order handling (matching func)
 - [ ] Timestamp
+- [ ] Study web API
+- [ ] add partial flag to resting order
 
 ## Ongoing
 - Match incoming Order
 - Engine return a list of match struct for flexibility
+- Testing engine
 
 ## Ideas
 - Add Best BA to the orderbook struct
@@ -42,12 +47,19 @@ Single asset exchange usefull to emulate real order book base trading
 8) Account manager (unsafe for testing)
 
 
-## Data Visual
-- Use python? The rich library can do a clean app for the terminal
 
-# Virtual Partecipants
+# Client
 
-## Bots
+## Virtual Partecipants
+
+### Type of Participants
+- **Market Maker** : Liquidity provvider, spread can be influenced by volatility
+- **Retail**: Source of noice, small orders, bias against news
+- **Shorters**: bias agaist market
+- **Big inverstors**: Block trading during the day
+- **Profesionals**: Complicated trades
+
+### Bots
 - with python
 - create subjects (retail, big institutions, market maker) with bias and peculiarities (volume, long short etc)
 
@@ -55,14 +67,11 @@ Single asset exchange usefull to emulate real order book base trading
 - news
 - bull or bear market
 
-## Type of Participants
-- **Market Maker** : Liquidity provvider, spread can be influenced by volatility
-- **Retail**: Source of noice, small orders, bias against news
-- **Shorters**: bias agaist market
-- **Big inverstors**: Block trading during the day
-- **Profesionals**: Complicated trades
+# Server
+- To send the market data first it needs to be made in a format transladable to JSON.
+Check the best AB funtion or make a new one
 
-## Matching Engine
+# Matching Engine
 - incoming orders
 - Check if the new order ID is in the list of processed orders
 - Need a vector with struct to keep all matches containing:
@@ -125,6 +134,7 @@ pub struct TimeStamp {
     pub time: Timestamp
 }
 ```
+
 
 
 ![Overview](/img/Overview.png)

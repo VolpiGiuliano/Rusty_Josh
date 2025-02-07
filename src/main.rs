@@ -17,9 +17,12 @@ fn main() {
     let or_6: order_book_mod::Order= order_book_mod::Order { id: (6),modify: (0),partial:(0), size: (1), price:(4), side:(true)};
     let or_7: order_book_mod::Order= order_book_mod::Order { id: (7),modify: (0),partial:(0), size: (2), price:(3), side:(false)};
     let or_8: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
-    let or_9: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
+    let or_9: order_book_mod::Order= order_book_mod::Order { id: (9),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
 
     let mut incoming_orders: VecDeque<Order>=VecDeque::new();
+    let mut list_matches: VecDeque<order_book_mod::Match>=VecDeque::new();
+
+
     incoming_orders.push_back(or_1);
     incoming_orders.push_back(or_2);
     incoming_orders.push_back(or_3);
@@ -42,7 +45,7 @@ fn main() {
 
     println!("Size: {}",order_book.volume_calculator(true, 5));
 
-    println!("Poped order: {:?}",order_book.rem(true,5));
+    println!("Popped order: {:?}",order_book.rem(true,5));
     println!("Size: {}",order_book.volume_calculator(true, 5));
     order_book.top_book_refresh();
     println!("TOP: {:?}",order_book.top_book);
@@ -60,5 +63,10 @@ fn main() {
     println!("{:?}",order_book);
     println!("--------------------------------------------");
 
+    list_matches.append(&mut order_book.new_order_handling(or_9));
+
+    println!("{:#?}",list_matches);
+    println!("TOP: {:?}",order_book.top_book);
+    println!("{:#?}",order_book);
 
 }
