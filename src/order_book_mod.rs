@@ -184,7 +184,6 @@ impl OrderBook {
 
     /// - Side: true=bid false=ask
     pub fn volume_calculator(&self,side: bool,price:usize)-> u32{
-        //or_bo.borrow_mut();
 
         let mut size: u32=0;
 
@@ -203,6 +202,13 @@ impl OrderBook {
     }
 
     
+    pub fn incoming_orders_processor(&mut self,list_order:&mut VecDeque<Order>, list_match:&mut VecDeque<Match> ){
+        while let Some(order_in) = list_order.pop_front(){
+            list_match.append(&mut self.new_order_handling(order_in));
+        }
+    }
+
+
     pub fn new_order_handling(&mut self,mut new_order:Order)->VecDeque<Match>{
         let mut matches_vec: VecDeque<Match>= Default::default();
         //let mut loop_con:bool=true;

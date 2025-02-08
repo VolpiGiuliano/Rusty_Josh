@@ -22,9 +22,16 @@ Single asset exchange usefull to emulate real order book base trading
 - [x] Vec deque
 - [X] libs
 - [X] New order handling (matching func)
+- [ ] Check top book refresh on order handling
 - [ ] Timestamp
 - [ ] Study web API
 - [ ] add partial flag to resting order
+
+## Bugs
+- the `new_order_handling` function panics when there is no best bid aor ask at the moment that `hread 'main' panicked at src/order_book_mod.rs:226:75:
+called `Option::unwrap()` on a `None` value`
+    - Create the code safe if there are no orders on the book (even just on one side)
+
 
 ## Ongoing
 - Match incoming Order
@@ -45,7 +52,6 @@ Single asset exchange usefull to emulate real order book base trading
 6) Local participant (co-location)
 7) remote connection (http). 
 8) Account manager (unsafe for testing)
-
 
 
 # Client

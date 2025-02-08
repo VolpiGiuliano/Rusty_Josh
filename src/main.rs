@@ -1,13 +1,17 @@
 use std::collections::VecDeque;
 
-use order_book_mod::Order;
-
 mod order_book_mod;
+
+
+
 
 
 fn main() {
 
     let mut order_book = order_book_mod::OrderBook::new();
+    let mut incoming_orders: VecDeque<order_book_mod::Order>=VecDeque::new();
+    let mut list_matches: VecDeque<order_book_mod::Match>=VecDeque::new();
+
 
     let or_1: order_book_mod::Order= order_book_mod::Order { id: (1),modify: (0),partial:(0), size: (4), price:(5), side:(true)};
     let or_2: order_book_mod::Order= order_book_mod::Order { id: (2),modify: (0),partial:(0), size: (3), price:(5), side:(true)};
@@ -19,13 +23,15 @@ fn main() {
     let or_8: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
     let or_9: order_book_mod::Order= order_book_mod::Order { id: (9),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
 
-    let mut incoming_orders: VecDeque<Order>=VecDeque::new();
-    let mut list_matches: VecDeque<order_book_mod::Match>=VecDeque::new();
+    // You need some orders in the book
+    order_book.inserter(or_2);
+    order_book.inserter(or_3);
+    order_book.top_book_refresh();
 
 
     incoming_orders.push_back(or_1);
-    incoming_orders.push_back(or_2);
-    incoming_orders.push_back(or_3);
+//    incoming_orders.push_back(or_2);
+//    incoming_orders.push_back(or_3);
     incoming_orders.push_back(or_4);
     incoming_orders.push_back(or_5);
     incoming_orders.push_back(or_6);
@@ -33,6 +39,11 @@ fn main() {
     incoming_orders.push_back(or_8);
     incoming_orders.push_back(or_9);
 
+    //TRADE!!!
+    order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
+    println!("{:?}",list_matches)
+
+    /*
     order_book.inserter(or_1);
     order_book.inserter(or_2);
     order_book.inserter(or_3);
@@ -68,5 +79,6 @@ fn main() {
     println!("{:#?}",list_matches);
     println!("TOP: {:?}",order_book.top_book);
     println!("{:#?}",order_book);
+*/
 
 }
