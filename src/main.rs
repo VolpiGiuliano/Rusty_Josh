@@ -1,9 +1,10 @@
 use std::collections::VecDeque;
 
+
+
 mod order_book_mod;
-
-
-
+mod io_mod;
+use order_book_mod::Order;
 
 
 fn main() {
@@ -12,7 +13,7 @@ fn main() {
     let mut incoming_orders: VecDeque<order_book_mod::Order>=VecDeque::new();
     let mut list_matches: VecDeque<order_book_mod::Match>=VecDeque::new();
 
-
+    // Sample Orders
     let or_1: order_book_mod::Order= order_book_mod::Order { id: (1),modify: (0),partial:(0), size: (4), price:(5), side:(true)};
     let or_2: order_book_mod::Order= order_book_mod::Order { id: (2),modify: (0),partial:(0), size: (3), price:(5), side:(true)};
     let or_3: order_book_mod::Order= order_book_mod::Order { id: (3),modify: (0),partial:(0), size: (3), price:(7), side:(false)};
@@ -41,7 +42,18 @@ fn main() {
 
     //TRADE!!!
     order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
-    println!("{:?}",list_matches)
+    
+    
+    println!("{:?}",list_matches);
+    println!("{:#?}",order_book);
+
+    // Input
+    loop {
+        incoming_orders.push_back(Order::new_order());
+        order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
+        println!("{:#?}",order_book.top_book);
+    }
+
 
     /*
     order_book.inserter(or_1);

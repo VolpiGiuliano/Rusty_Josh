@@ -17,6 +17,7 @@ pub struct Order {
     pub side: bool
 }
 
+
 #[derive(Debug)]
 /// - resting:
 ///     - true = bid was the resting order

@@ -1,6 +1,6 @@
 # Rusty_Josh
-Single asset exchange usefull to emulate real order book base trading
-
+Single asset exchange usefull to emulate real order book base trading.
+--
 ## Links
 ### Queue
 - https://doc.rust-lang.org/std/collections/vec_deque/struct.VecDeque.html#
@@ -101,11 +101,16 @@ pub struct Match{
     resting: bool
 }
 ```
-
-![Schema ME](/img/New%20order%20Match.png)
-
+# Orders
+## Types
+- Limit ✅ 
+- Market ❌
+- Hidden ❌
+## Modifications
+Rules:
 
 ## ID
+The ID is created with in the Clearence house
 ### Format
 `123456789-55555-11-22`
 1) Order code
@@ -113,8 +118,13 @@ pub struct Match{
 3) Modification
 4) Partial fill
 
+---
 
-## Time stamps
+![Schema ME](/img/New%20order%20Match.png)
+
+
+
+# Time stamps
 
 An Order should have multiple timestamps for:
 - Arriving at the Exchange
