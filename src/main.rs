@@ -1,77 +1,96 @@
 use std::collections::VecDeque;
 
-use ob_utils::volume_calculator;
-mod ob_utils;
-mod stru;
-use ob_utils::top_book;
 
+
+mod order_book_mod;
+mod io_mod;
+use order_book_mod::Order;
 
 
 fn main() {
 
-    ///////////////////////////
-    let mut ask_vecs: Vec<VecDeque<stru::Order>> = vec![VecDeque::new(); stru::ORDER_BOOK_LENGHT]; // Each element is an empty `VecDeque<Order>`
-    let mut bid_vecs: Vec<VecDeque<stru::Order>> = vec![VecDeque::new(); stru::ORDER_BOOK_LENGHT];
+    let mut order_book = order_book_mod::OrderBook::new();
+    let mut incoming_orders: VecDeque<order_book_mod::Order>=VecDeque::new();
+    let mut list_matches: VecDeque<order_book_mod::Match>=VecDeque::new();
 
-    // Create references to each `Vec<Order>` for `ask` and `bid`
-    let ask_refs: [&mut VecDeque<stru::Order>; stru::ORDER_BOOK_LENGHT] = ask_vecs.iter_mut().collect::<Vec<_>>().try_into().unwrap();
-    let bid_refs: [&mut VecDeque<stru::Order>; stru::ORDER_BOOK_LENGHT] = bid_vecs.iter_mut().collect::<Vec<_>>().try_into().unwrap();
+    // Sample Orders
+    let or_1: order_book_mod::Order= order_book_mod::Order { id: (1),modify: (0),partial:(0), size: (4), price:(5), side:(true)};
+    let or_2: order_book_mod::Order= order_book_mod::Order { id: (2),modify: (0),partial:(0), size: (3), price:(5), side:(true)};
+    let or_3: order_book_mod::Order= order_book_mod::Order { id: (3),modify: (0),partial:(0), size: (3), price:(7), side:(false)};
+    let or_4: order_book_mod::Order= order_book_mod::Order { id: (4),modify: (0),partial:(0), size: (9), price:(7), side:(false)};
+    let or_5: order_book_mod::Order= order_book_mod::Order { id: (5),modify: (0),partial:(0), size: (1), price:(8), side:(false)};
+    let or_6: order_book_mod::Order= order_book_mod::Order { id: (6),modify: (0),partial:(0), size: (1), price:(4), side:(true)};
+    let or_7: order_book_mod::Order= order_book_mod::Order { id: (7),modify: (0),partial:(0), size: (2), price:(3), side:(false)};
+    let or_8: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
+    let or_9: order_book_mod::Order= order_book_mod::Order { id: (9),modify: (0),partial:(0), size: (2), price:(9), side:(true)};
 
-    // Initialize the OrderBook struct
-    let mut order_book = stru::OrderBook {
-        ask: ask_refs,
-        bid: bid_refs,
-    };
-    /////////////////////////////////////////////////////////////
-
-    let or_1: stru::Order= stru::Order { id: (1), size: (4), price:(5.0), side:(true)};
-    let or_2: stru::Order= stru::Order { id: (2), size: (3), price:(5.0), side:(true)};
-    let or_3: stru::Order= stru::Order { id: (3), size: (3), price:(7.0), side:(false)};
-    let or_4: stru::Order= stru::Order { id: (4), size: (10), price:(7.0), side:(false)};
-    let or_5: stru::Order= stru::Order { id: (5), size: (1), price:(8.0), side:(false)};
-    let or_6: stru::Order= stru::Order { id: (6), size: (1), price:(4.0), side:(true)};
-    let or_7: stru::Order= stru::Order { id: (7), size: (2), price:(3.0), side:(false)};
-    let or_8: stru::Order= stru::Order { id: (8), size: (2), price:(9.0), side:(true)};
+    // You need some orders in the book
+    order_book.inserter(or_2);
+    order_book.inserter(or_3);
+    order_book.top_book_refresh();
 
 
+    incoming_orders.push_back(or_1);
+//    incoming_orders.push_back(or_2);
+//    incoming_orders.push_back(or_3);
+    incoming_orders.push_back(or_4);
+    incoming_orders.push_back(or_5);
+    incoming_orders.push_back(or_6);
+    incoming_orders.push_back(or_7);
+    incoming_orders.push_back(or_8);
+    incoming_orders.push_back(or_9);
 
-    ob_utils::inserter(or_1, &mut order_book);    
-    ob_utils::inserter(or_2, &mut order_book);
-    ob_utils::inserter(or_3, &mut order_book);
+    //TRADE!!!
+    order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
+    
+    
+    println!("{:?}",list_matches);
+    println!("{:#?}",order_book);
 
-    ob_utils::inserter(or_4, &mut order_book);
+    // Input
+    loop {
+        incoming_orders.push_back(Order::new_order());
+        order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
+        println!("{:#?}",order_book.top_book);
+    }
 
-    println!("Size: {}",volume_calculator(true, 5, &mut order_book));
 
-    //println!("Poped order: {:?}",ob_utils::rem(true,3,5,&mut order_book));
-    //println!("Size: {}",volume_calculator(true, 5, &mut order_book));
+    /*
+    order_book.inserter(or_1);
+    order_book.inserter(or_2);
+    order_book.inserter(or_3);
+    order_book.inserter(or_4);
+
+    order_book.top_book_refresh();
+    println!("TOP: {:?}",order_book.top_book);
+
     println!("{:?}",order_book);
 
-    
+    println!("Size: {}",order_book.volume_calculator(true, 5));
 
-    let prov=ob_utils::top_book(stru::ORDER_BOOK_LENGHT, &mut order_book );
+    println!("Popped order: {:?}",order_book.rem(true,5));
+    println!("Size: {}",order_book.volume_calculator(true, 5));
+    order_book.top_book_refresh();
+    println!("TOP: {:?}",order_book.top_book);
 
-    println!("best orderBook: {:?}",prov);
-    
-    println!("Size: {}",volume_calculator(false, 7, &mut order_book));
-    
+    println!("--------------------------------------------");
 
-    // test deep
-    ob_utils::inserter(or_5, &mut order_book);
-    ob_utils::inserter(or_6, &mut order_book);
-
+    order_book.new_order_handling(or_5);
+    order_book.new_order_handling(or_6);
+    order_book.new_order_handling(or_7);
+    println!("--------------------------------------------");
     println!("{:?}",order_book);
-    println!("best orderBook: {:?}", top_book(stru::ORDER_BOOK_LENGHT, &mut order_book ));
-    println!("Size: {}",volume_calculator(false, 7, &mut order_book));
-
-    // test cross
-
-    ob_utils::inserter(or_7, &mut order_book);
-    ob_utils::inserter(or_8, &mut order_book);
-
+    println!("TOP: {:?}",order_book.top_book);
+    order_book.new_order_handling(or_8);
+    println!("TOP: {:?}",order_book.top_book);
     println!("{:?}",order_book);
-    println!("best orderBook: {:?}",top_book(stru::ORDER_BOOK_LENGHT, &mut order_book ));
-    println!("Size: {}",volume_calculator(false, 7, &mut order_book));
+    println!("--------------------------------------------");
 
+    list_matches.append(&mut order_book.new_order_handling(or_9));
+
+    println!("{:#?}",list_matches);
+    println!("TOP: {:?}",order_book.top_book);
+    println!("{:#?}",order_book);
+*/
 
 }
