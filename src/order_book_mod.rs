@@ -19,9 +19,11 @@ pub struct Order {
 
 
 #[derive(Debug)]
+/// Struct that 
 /// - resting:
 ///     - true = bid was the resting order
 ///     - false = ask was the resting order
+/// Add the partial information or figure out how to point towards that information
 pub struct Match{
     id_b:u8,
     id_a:u8,
@@ -55,6 +57,8 @@ pub struct ResultMatch{
 /// - 4 -> Cross Ask: a new Ask order crosses the spread (Bid is the older resting order)
 /// 
 /// The 3 and 4 are useless if the trades are made only during the new order handling
+///  
+/// *It can be useless, consider to eliminate it*
 #[derive(Debug)]
 pub struct BestAB{
     pub ask_p:usize,
@@ -82,15 +86,11 @@ impl BestAB {
 
 
 /// # Order Book
-/// The most important part of the exchange
-/// ## Functions
-/// - ### new() -> OrderBook 
+/// The most important part of the exchange, it has the order book it self and the top_book struct usefull
+/// to handle informations and trades without the need to iterate the entire book more more than necessary.
+/// ## Funtions
+/// - new() -> OrderBook: Usefull to initialize it
 /// 
-/// - ### inserter(&mut self,order: Order)
-/// 
-/// - ### rem(&mut self,side:bool,price: usize)->Order
-/// 
-/// - ### top_book(&self)->BestAB
 #[derive(Debug)]
 pub struct OrderBook {
     pub ask: [Box<VecDeque<Order>>; ORDER_BOOK_LENGTH],
@@ -119,7 +119,7 @@ impl OrderBook {
         
     }
 
-    /// _size: remove
+
     pub fn rem(&mut self,side:bool,price: usize)->Order{
        
         if side==true {
@@ -202,7 +202,9 @@ impl OrderBook {
         return size;
     }
 
-    
+    /// # Input and output Engine processor
+    /// The Matching Engine has as an input a list of new orders and it outputs a list of Matches.
+    /// To handle this two lists and to not overcomplicate the Engine we use this function
     pub fn incoming_orders_processor(&mut self,list_order:&mut VecDeque<Order>, list_match:&mut VecDeque<Match> ){
         while let Some(order_in) = list_order.pop_front(){
             list_match.append(&mut self.new_order_handling(order_in));
@@ -210,12 +212,15 @@ impl OrderBook {
     }
 
 
+    /// # Matching Engine for Limit Orders
+    /// The function handles new Limit Orders
+    /// 
+    /// 
     pub fn new_order_handling(&mut self,mut new_order:Order)->VecDeque<Match>{
+        
         let mut matches_vec: VecDeque<Match>= Default::default();
-        //let mut loop_con:bool=true;
-        //let mut match_order;
 
-        // no loop, try to run the same function with a new order
+        // Loop usefull to manage a partial fill
         loop {
             
             // New Bid, examine the Ask
@@ -360,8 +365,6 @@ impl OrderBook {
         
         } // loop
 
-        //self.top_book_refresh();
-        //return matches_vec
     
     }
 
