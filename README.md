@@ -31,6 +31,7 @@ Single asset exchange usefull to emulate real order book base trading.
 - the `new_order_handling` function panics when there is no best bid aor ask at the moment that `hread 'main' panicked at src/order_book_mod.rs:226:75:
 called `Option::unwrap()` on a `None` value`
     - Create the code safe if there are no orders on the book (even just on one side)
+    - It is better an exception handling or a simple `if` option?
 
 
 ## Ongoing
@@ -72,6 +73,13 @@ called `Option::unwrap()` on a `None` value`
 ## Enviroment
 - news
 - bull or bear market
+
+
+# Database
+It will be usefull to use a sql (possible MySQL) database to keep all tidy all the inforamtion not only for the 
+normal operations but also to summarize an entire session to study.
+- [ ] Create the graph 
+- [ ] Study how to insert it in the program
 
 # Server
 - To send the market data first it needs to be made in a format transladable to JSON.
