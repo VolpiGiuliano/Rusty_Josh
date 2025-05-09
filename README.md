@@ -77,7 +77,12 @@ called `Option::unwrap()` on a `None` value`
 - To send the market data first it needs to be made in a format transladable to JSON.
 Check the best AB funtion or make a new one
 
+# Clearing House
+## Income
+- Check for wash trading (needs a list of all active orders)
+- Check margin
 # Matching Engine
+- `fn incoming_orders_processor` : Should be used to route Ordes to the Lim_O handling or market_O handling.
 - incoming orders
 - Check if the new order ID is in the list of processed orders
 - Need a vector with struct to keep all matches containing:
