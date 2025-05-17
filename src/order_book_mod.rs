@@ -14,7 +14,8 @@ pub struct Order {
     pub partial: u8,
     pub size: u32,
     pub price: u32,
-    pub side: bool
+    pub side: bool,
+    pub o_type:u8
 }
 
 
@@ -193,6 +194,7 @@ impl OrderBook {
             for ord in self.bid[price].iter(){
                 size+= ord.size;
             }
+
         } else { 
 
             for ord in self.ask[price].iter(){
@@ -207,7 +209,8 @@ impl OrderBook {
     /// To handle this two lists and to not overcomplicate the Engine we use this function
     pub fn incoming_orders_processor(&mut self,list_order:&mut VecDeque<Order>, list_match:&mut VecDeque<Match> ){
         while let Some(order_in) = list_order.pop_front(){
-            list_match.append(&mut self.new_order_handling(order_in));
+            // list_match.append(&mut self.new_order_handling(order_in)); // good for now
+            list_match.append(&mut self.new_order_handling(order_in)); // test
         }
     }
 
@@ -221,6 +224,8 @@ impl OrderBook {
         let mut matches_vec: VecDeque<Match>= Default::default();
 
         // Loop usefull to manage a partial fill
+        // The loop should be more specific to the side (you don't need
+        // to check again if it is a bid or ask)
         loop {
             
             // New Bid, examine the Ask
@@ -288,7 +293,7 @@ impl OrderBook {
                 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////    
+////////////////////////////////////ASK///////////////////////////////////////////////////    
             
             }else if new_order.side==false && new_order.price <= self.top_book.bid_p as u32 {// New Bid, examine the Ask
                 println!("New ask");
@@ -303,9 +308,9 @@ impl OrderBook {
                         rest_order.partial +=1;
 
                         matches_vec.push_back(Match{
-                            id_b:new_order.id,
-                            id_a:self.bid[self.top_book.bid_p].front().unwrap().id,
-                            volume_filled:new_order.size ,
+                            id_b: self.bid[self.top_book.bid_p].front().unwrap().id,
+                            id_a: new_order.id,
+                            volume_filled: new_order.size ,
                             price:self.bid[self.top_book.bid_p].front().unwrap().price,
                         //    time_stamp:,
                             resting: false
@@ -321,8 +326,8 @@ impl OrderBook {
                     new_order.size -=self.bid[self.top_book.bid_p].front().unwrap().size;
 
                     matches_vec.push_back(Match{
-                        id_b:new_order.id,
-                        id_a:self.bid[self.top_book.bid_p].front().unwrap().id,
+                        id_b: self.bid[self.top_book.bid_p].front().unwrap().id,
+                        id_a: new_order.id,
                         volume_filled:self.bid[self.top_book.bid_p].front().unwrap().size,
                         price:self.bid[self.top_book.bid_p].front().unwrap().price,
                     //    time_stamp:,
@@ -338,8 +343,8 @@ impl OrderBook {
 
                     
                     matches_vec.push_back(Match{
-                        id_b:new_order.id,
-                        id_a:self.bid[self.top_book.bid_p].front().unwrap().id,
+                        id_b: self.bid[self.top_book.bid_p].front().unwrap().id,
+                        id_a: new_order.id,
                         volume_filled:new_order.size,
                         price:self.bid[self.top_book.bid_p].front().unwrap().price,
                     //    time_stamp:,
@@ -369,9 +374,209 @@ impl OrderBook {
     }
 
 
+    /// # Matching Engine for Market Orders
+    /// The function handles new Market Orders.
+    /// 
+    /// 
+    pub fn new_m_order_handling(&mut self,mut new_order:Order)->VecDeque<Match>{
+        
+        let mut matches_vec: VecDeque<Match>= Default::default();
+        // Check if you have a Market Order
+        if new_order.o_type != 0{
+            println!("ERROR a NON market order entered in the handling");
+            return matches_vec;
+        }
+
+        // Loop usefull to manage a partial fill
+        loop {
+            // new order is a bid
+            if new_order.side == true{
+                if new_order.size < self.top_book.ask_s{
+                    // Safe
+                    if let Some(rest_order) = self.ask[self.top_book.ask_p].front_mut(){
+                        rest_order.size -= new_order.size;
+                        rest_order.partial +=1;
+
+                        matches_vec.push_back(Match{
+                                id_b:new_order.id,
+                                id_a:self.bid[self.top_book.bid_p].front().unwrap().id,
+                                volume_filled:new_order.size ,
+                                price:self.bid[self.top_book.bid_p].front().unwrap().price,
+                            //    time_stamp:,
+                                resting: false
+                            } );
+
+                        self.top_book_refresh();
+                        return matches_vec
+                    }
+                }else if new_order.size > self.top_book.ask_s {
+                    
+
+
+                }
+
+
+               
+            }else { // new order is an ask  
+                
+            }
+        }
+        matches_vec
+    }
+
+    pub fn tot_order_handling(&mut self,mut new_order:Order)->VecDeque<Match>{
+        
+        let mut matches_vec: VecDeque<Match>= Default::default();
+
+        // Loop usefull to manage a partial fill
+        // The loop should be more specific to the side (you don't need
+        // to check again if it is a bid or ask)
+        loop {
+            
+            // New Bid, examine the Ask
+            // there is a hit
+            if new_order.side && ((new_order.price >= self.top_book.ask_p as u32 && new_order.o_type==1)|| new_order.o_type==0){
+                println!("New bid");
+            
+                // Modify rest
+                if new_order.size < self.ask[self.top_book.ask_p].front().unwrap().size {
+                    
+                    // Safe
+                    if let Some(rest_order) = self.ask[self.top_book.ask_p].front_mut(){
+                        rest_order.size -= new_order.size;
+                        rest_order.partial +=1;
+
+                        matches_vec.push_back(Match{
+                            id_b:new_order.id,
+                            id_a:self.ask[self.top_book.ask_p].front().unwrap().id,
+                            volume_filled:new_order.size ,
+                            price:self.ask[self.top_book.ask_p].front().unwrap().price,
+                        //    time_stamp:,
+                            resting: false
+                        } );
+                        self.top_book_refresh();
+                        return matches_vec
+
+                    }
+                    
+
+                //------------------------------------------------------------------------------
+                // Modify new
+                }else if  new_order.size > self.ask[self.top_book.ask_p].front().unwrap().size {
+                    new_order.size -=self.ask[self.top_book.ask_p].front().unwrap().size;
+                    
+                    matches_vec.push_back(Match{
+                        id_b:new_order.id,
+                        id_a:self.ask[self.top_book.ask_p].front().unwrap().id,
+                        volume_filled:self.ask[self.top_book.ask_p].front().unwrap().size,
+                        price:self.ask[self.top_book.ask_p].front().unwrap().price,
+                    //    time_stamp:,
+                        resting: false
+                    });
+
+                    self.ask[self.top_book.ask_p].pop_front();
+                    self.top_book_refresh();
+                    // The new order needs to be looped back and processed
+                    continue;
+                    
+                }else if  new_order.size == self.ask[self.top_book.ask_p].front().unwrap().size {
+
+                    
+                    matches_vec.push_back(Match{
+                        id_b:new_order.id,
+                        id_a:self.ask[self.top_book.ask_p].front().unwrap().id,
+                        volume_filled:new_order.size,
+                        price:self.ask[self.top_book.ask_p].front().unwrap().price,
+                    //    time_stamp:,
+                        resting: false
+                    });
+
+                    self.ask[self.top_book.ask_p].pop_front();
+                    self.top_book_refresh();
+                    return matches_vec;
+
+                }
+
+
+////////////////////////////////////ASK///////////////////////////////////////////////////    
+            
+            }else if new_order.side==false && ((new_order.price <= self.top_book.bid_p as u32 && new_order.o_type==1) || new_order.o_type==0) {// New Bid, examine the Ask
+                println!("New ask");
+
+
+
+                if new_order.size < self.bid[self.top_book.bid_p].front().unwrap().size {
+                    
+                    // Safe
+                    if let Some(rest_order) = self.bid[self.top_book.bid_p].front_mut(){
+                        rest_order.size -= new_order.size;
+                        rest_order.partial +=1;
+
+                        matches_vec.push_back(Match{
+                            id_b: self.bid[self.top_book.bid_p].front().unwrap().id,
+                            id_a: new_order.id,
+                            volume_filled: new_order.size ,
+                            price:self.bid[self.top_book.bid_p].front().unwrap().price,
+                        //    time_stamp:,
+                            resting: false
+                        } );
+                        self.top_book_refresh();
+                        return matches_vec
+
+                
+                    }
+
+            
+                }else if  new_order.size > self.bid[self.top_book.bid_p].front().unwrap().size {
+                    new_order.size -=self.bid[self.top_book.bid_p].front().unwrap().size;
+
+                    matches_vec.push_back(Match{
+                        id_b: self.bid[self.top_book.bid_p].front().unwrap().id,
+                        id_a: new_order.id,
+                        volume_filled:self.bid[self.top_book.bid_p].front().unwrap().size,
+                        price:self.bid[self.top_book.bid_p].front().unwrap().price,
+                    //    time_stamp:,
+                        resting: false
+                    });
+
+                    self.bid[self.top_book.bid_p].pop_front();
+                    self.top_book_refresh();
+                    // The new order needs to be looped back and processed
+                    continue;
+                
+                }else if  new_order.size == self.bid[self.top_book.bid_p].front().unwrap().size {
+
+                    
+                    matches_vec.push_back(Match{
+                        id_b: self.bid[self.top_book.bid_p].front().unwrap().id,
+                        id_a: new_order.id,
+                        volume_filled:new_order.size,
+                        price:self.bid[self.top_book.bid_p].front().unwrap().price,
+                    //    time_stamp:,
+                        resting: false
+                    });
+
+                    self.bid[self.top_book.bid_p].pop_front();
+                    self.top_book_refresh();
+                    return matches_vec;
+
+                }
+                
+
+
+            } else {
+                self.inserter(new_order);
+                println!("Inserted no match");
+                self.top_book_refresh();
+                return matches_vec
+            }
+
+            self.top_book_refresh();
+        
+        } // loop
+
+    
+    }
+
 
 }
-
-
-
-

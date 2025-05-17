@@ -1,3 +1,5 @@
+/// Scrip for the Input and Output commands
+
 use std::io;
 use crate::order_book_mod::Order;
 
@@ -85,13 +87,14 @@ impl Order{
             }
         };
 
-        println!("NEW ORDER {:#?}",        Order{
+        println!("NEW ORDER {:#?}",Order{
             id: 50,
             modify: 0,
             partial: 0,
             size: tr_size,
             price: tr_price,
-            side: side_in
+            side: side_in,
+            o_type: 1
         });
 
         Order{
@@ -100,7 +103,8 @@ impl Order{
             partial: 0,
             size: tr_size,
             price: tr_price,
-            side: side_in
+            side: side_in,
+            o_type: 1
         }
     }
 }

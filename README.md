@@ -25,13 +25,18 @@ Single asset exchange usefull to emulate real order book base trading.
 - [ ] Check top book refresh on order handling
 - [ ] Timestamp
 - [ ] Study web API
-- [ ] add partial flag to resting order
+- [ ] Add partial flag to resting order
+- [X] IMPORTANT: The matched info from the limit order are wrong
+- [ ] A general check of the matches vector
+- [ ] Test tot order handling
+- [ ] Event: new market order when rest size is insufficient
 
 ## Bugs
 - the `new_order_handling` function panics when there is no best bid aor ask at the moment that `hread 'main' panicked at src/order_book_mod.rs:226:75:
 called `Option::unwrap()` on a `None` value`
     - Create the code safe if there are no orders on the book (even just on one side)
     - It is better an exception handling or a simple `if` option?
+  
 
 
 ## Ongoing
@@ -151,6 +156,7 @@ pub struct Order {
     pub size: u32,
     pub price: f64,
     pub side: bool,
+    pub o_type: u8
     pub time: VecDeque<TimeStamp>
 }
 pub struct TimeStamp {
@@ -158,7 +164,12 @@ pub struct TimeStamp {
     pub time: Timestamp
 }
 ```
+Order types
+- 0: Market
+- 1: Limit 
 
-
+Side
+- true -> Bid
+- false -> Ask
 
 ![Overview](/img/Overview.png)
