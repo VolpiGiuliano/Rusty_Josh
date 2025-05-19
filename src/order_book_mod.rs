@@ -1,9 +1,14 @@
 use std::collections::{VecDeque};
 use std::usize;
+use std::sync::{Arc};//, RwLock};
+
 use serde::Serialize;
+use tokio::sync::RwLock;
+
 
 
 pub const ORDER_BOOK_LENGTH: usize = 10;
+
 
 #[derive(Serialize)]
 #[derive(Clone,Copy, Debug)]
@@ -20,7 +25,7 @@ pub struct Order {
     pub o_type:u8
 }
 
-
+#[warn(dead_code)]
 #[derive(Debug)]
 /// Struct that 
 /// - resting:
@@ -36,12 +41,14 @@ pub struct Match{
     resting: bool
 }
 
+/*
 pub struct ResultMatch{
     top_book:BestAB,
     o_bid: VecDeque<Order>,
     o_ask: VecDeque<Order>,
     is_match: bool
 }
+*/
 
 /// # Best Bid & Ask
 /// 
@@ -124,7 +131,7 @@ impl OrderBook {
         
     }
 
-
+    #[warn(dead_code)]
     pub fn rem(&mut self,side:bool,price: usize)->Order{
        
         if side==true {
@@ -211,12 +218,19 @@ impl OrderBook {
     /// # Input and output Engine processor
     /// The Matching Engine has as an input a list of new orders and it outputs a list of Matches.
     /// To handle this two lists and to not overcomplicate the Engine we use this function
-    pub fn incoming_orders_processor(&mut self,list_order:&mut VecDeque<Order>, list_match:&mut VecDeque<Match> ){
+    /// DA RIVEDERE LIST ORDER TYPE
+    pub async fn incoming_orders_processor(
+        &mut self,
+        list_order:&mut VecDeque<Order>,
+        list_match:&Arc<RwLock<VecDeque<Match>>> ){
         while let Some(order_in) = list_order.pop_front(){
-            // list_match.append(&mut self.new_order_handling(order_in)); // good for now
-            list_match.append(&mut self.tot_order_handling(order_in)); // test
+            let new_matches = self.tot_order_handling(order_in);
+
+            let mut match_list = list_match.write().await;
+            match_list.extend(new_matches);
             println!("{:#?}",self.top_book);
         }
+        self.top_book_refresh();
     }
 
 

@@ -9,6 +9,7 @@ dependencies = [
  "actix-web",
  "array-init",
  "serde",
+ "tokio",
 ]
 
 [[package]]
