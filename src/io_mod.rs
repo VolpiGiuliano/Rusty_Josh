@@ -7,6 +7,24 @@ impl Order{
 
     pub fn new_order()->Order{
 
+        // Type
+        let tr_type: u8 = loop {
+            let mut t_input = String::new();
+            println!("Enter type: [0] Market  or  [1] Limit -> ");
+    
+            io::stdin().read_line(&mut t_input).expect("Failed to read input");
+    
+            if t_input.trim() != String::from("0") || t_input.trim() != String::from("0") {
+                continue;
+            }
+
+            match t_input.trim().parse() {
+
+                Ok(num) => break num, // Exit the loop with the valid number
+                Err(_) => println!("Invalid type! Please enter a valid u32."),
+            }
+
+        };
 
         // Side
         let side_in: bool= loop {
@@ -26,56 +44,26 @@ impl Order{
 
 
 
-        let tr_price: u32 = loop {
-            let mut p_input = String::new();
-            println!("Enter price: ");
-    
-            io::stdin().read_line(&mut p_input).expect("Failed to read input");
-    
-            match p_input.trim().parse() {
-                Ok(num) => break num, // Exit the loop with the valid number
-                Err(_) => println!("Invalid price! Please enter a valid u32."),
+        let tr_price: u32 = if tr_type==0{
+            0
+        }else{
+            loop {
+                let mut p_input = String::new();
+                println!("Enter price: ");
+        
+                io::stdin().read_line(&mut p_input).expect("Failed to read input");
+        
+                match p_input.trim().parse() {
+                    Ok(num) => break num, // Exit the loop with the valid number
+                    Err(_) => println!("Invalid price! Please enter a valid u32."),
+                }
             }
         };
 
 
-
-/*
-        // PRICE
-        let mut p_input = String::new();
-
-        println!("Enter price: ");
-        
-        io::stdin().read_line(&mut p_input).expect("Failed to read price");
-    
-        // Trim whitespace and attempt to parse as u32
-        let tr_price: u32 = match p_input.trim().parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!("Invalid price! Please enter a valid u32.");
-                return;
-            
-        };
-
-
-        // Size
-        let mut s_input = String::new();
-
-        println!("Enter size: ");
-        
-        io::stdin().read_line(&mut s_input).expect("Failed to read size");
-    
-        // Trim whitespace and attempt to parse as u32
-        let tr_size: u32 = match s_input.trim().parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!("Invalid size! Please enter a valid u32.");
-                return;
-            }
-        };
-*/
 
         let tr_size: u32 = loop {
+
             let mut s_input = String::new();
             println!("Enter size: ");
     
@@ -87,25 +75,18 @@ impl Order{
             }
         };
 
-        println!("NEW ORDER {:#?}",Order{
+        let new_order= Order{
             id: 50,
             modify: 0,
             partial: 0,
             size: tr_size,
             price: tr_price,
             side: side_in,
-            o_type: 1
-        });
+            o_type: tr_type
+        };
+        println!("NEW ORDER {:#?}",new_order);
 
-        Order{
-            id: 50,
-            modify: 0,
-            partial: 0,
-            size: tr_size,
-            price: tr_price,
-            side: side_in,
-            o_type: 1
-        }
+        new_order
     }
 }
 

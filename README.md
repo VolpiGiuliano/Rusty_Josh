@@ -30,6 +30,7 @@ Single asset exchange usefull to emulate real order book base trading.
 - [ ] A general check of the matches vector
 - [ ] Test tot order handling
 - [ ] Event: new market order when rest size is insufficient
+- [X] Add market order in IO
 
 ## Bugs
 - the `new_order_handling` function panics when there is no best bid aor ask at the moment that `hread 'main' panicked at src/order_book_mod.rs:226:75:
@@ -122,7 +123,7 @@ pub struct Match{
 # Orders
 ## Types
 - Limit ✅ 
-- Market ❌
+- Market ✅ 
 - Hidden ❌
 ## Modifications
 Rules:
@@ -153,7 +154,7 @@ An Order should have multiple timestamps for:
 
 This multiple possibilities require a flexible array, a good one can be 
 a simple Queue that preserves the order of the events.
-
+This struct is for internal use ONLY.
 
 ```Rust
 pub struct Order {
@@ -162,7 +163,7 @@ pub struct Order {
     pub price: f64,
     pub side: bool,
     pub o_type: u8
-    pub time: VecDeque<TimeStamp>
+    pub time: VecDeque<TimeStamp> // to do
 }
 pub struct TimeStamp {
     pub event: u8

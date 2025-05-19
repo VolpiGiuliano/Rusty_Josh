@@ -1,7 +1,5 @@
 use std::collections::VecDeque;
 
-
-
 mod order_book_mod;
 mod io_mod;
 use order_book_mod::Order;
@@ -24,7 +22,7 @@ fn main() {
     let or_8: order_book_mod::Order= order_book_mod::Order { id: (8),modify: (0),partial:(0), size: (2), price:(9), side:(true), o_type: (1)};
     let or_9: order_book_mod::Order= order_book_mod::Order { id: (9),modify: (0),partial:(0), size: (2), price:(9), side:(true), o_type: (1)};
 
-    // test market
+    // test order market
     let or_10: order_book_mod::Order= order_book_mod::Order { id: (10),modify: (0),partial:(0), size: (2), price:(0), side:(true), o_type: (0)};
     let or_11: order_book_mod::Order= order_book_mod::Order { id: (11),modify: (0),partial:(0), size: (6), price:(0), side:(true), o_type: (0)};
     let or_12: order_book_mod::Order= order_book_mod::Order { id: (12),modify: (0),partial:(0), size: (2), price:(0), side:(false), o_type: (0)};
@@ -45,11 +43,12 @@ fn main() {
     incoming_orders.push_back(or_7);
     incoming_orders.push_back(or_8);
     incoming_orders.push_back(or_9);
-
+/* 
     incoming_orders.push_back(or_10);
     incoming_orders.push_back(or_11);
     incoming_orders.push_back(or_12);
     incoming_orders.push_back(or_13);
+*/
 
     //TRADE!!!
     order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
@@ -65,43 +64,5 @@ fn main() {
         println!("{:#?}",order_book.top_book);
     }
 
-
-    /*
-    order_book.inserter(or_1);
-    order_book.inserter(or_2);
-    order_book.inserter(or_3);
-    order_book.inserter(or_4);
-
-    order_book.top_book_refresh();
-    println!("TOP: {:?}",order_book.top_book);
-
-    println!("{:?}",order_book);
-
-    println!("Size: {}",order_book.volume_calculator(true, 5));
-
-    println!("Popped order: {:?}",order_book.rem(true,5));
-    println!("Size: {}",order_book.volume_calculator(true, 5));
-    order_book.top_book_refresh();
-    println!("TOP: {:?}",order_book.top_book);
-
-    println!("--------------------------------------------");
-
-    order_book.new_order_handling(or_5);
-    order_book.new_order_handling(or_6);
-    order_book.new_order_handling(or_7);
-    println!("--------------------------------------------");
-    println!("{:?}",order_book);
-    println!("TOP: {:?}",order_book.top_book);
-    order_book.new_order_handling(or_8);
-    println!("TOP: {:?}",order_book.top_book);
-    println!("{:?}",order_book);
-    println!("--------------------------------------------");
-
-    list_matches.append(&mut order_book.new_order_handling(or_9));
-
-    println!("{:#?}",list_matches);
-    println!("TOP: {:?}",order_book.top_book);
-    println!("{:#?}",order_book);
-*/
 
 }
