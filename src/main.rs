@@ -1,13 +1,21 @@
 use std::collections::VecDeque;
+use std::sync::{Arc, RwLock};
 
 mod order_book_mod;
 mod io_mod;
 use order_book_mod::Order;
 
+mod server_mod;
+use server_mod::{index, send_market_data, submit_order};
 
-fn main() {
+use actix_web::{web, App, HttpServer};
 
-    let mut order_book = order_book_mod::OrderBook::new();
+#[actix_web::main]
+async fn main() -> std::io::Result<()>{
+
+    let mut order_book_i = order_book_mod::OrderBook::new();
+    let mut order_book = Arc::new(RwLock::new(order_book_i));
+
     let mut incoming_orders: VecDeque<order_book_mod::Order>=VecDeque::new();
     let mut list_matches: VecDeque<order_book_mod::Match>=VecDeque::new();
 
@@ -29,14 +37,19 @@ fn main() {
     let or_13: order_book_mod::Order= order_book_mod::Order { id: (13),modify: (0),partial:(0), size: (6), price:(0), side:(false), o_type: (0)};
 
     // You need some orders in the book
-    order_book.inserter(or_2);
-    order_book.inserter(or_3);
-    order_book.top_book_refresh();
+    {
+        let mut book = order_book.write().unwrap(); // or `.await` if using `tokio::RwLock`
+        book.inserter(or_2);
+        book.inserter(or_3);
+        book.top_book_refresh();
 
+
+    }
+    
 
     incoming_orders.push_back(or_1);
-//    incoming_orders.push_back(or_2);
-//    incoming_orders.push_back(or_3);
+    incoming_orders.push_back(or_2);//
+    incoming_orders.push_back(or_3);//
     incoming_orders.push_back(or_4);
     incoming_orders.push_back(or_5);
     incoming_orders.push_back(or_6);
@@ -50,19 +63,48 @@ fn main() {
     incoming_orders.push_back(or_13);
 */
 
-    //TRADE!!!
-    order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
+    {
+        //TRADE!!!
+        let mut book = order_book.write().unwrap(); // or `.await` if using `tokio::RwLock`
+        book.incoming_orders_processor(&mut incoming_orders, &mut list_matches);
+    }
+    
     
     
     println!("{:?}",list_matches);
     println!("{:#?}",order_book);
 
+    /*
     // Input
     loop {
         incoming_orders.push_back(Order::new_order());
         order_book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
         println!("{:#?}",order_book.top_book);
     }
+    */
+    let shared_data = web::Data::new(order_book.clone());
+    //let shared_data = web::Data::new(order_book);
+    HttpServer::new(move || {
+        
+        App::new()
+            .route("/", web::post().to(index))
+            .app_data(shared_data.clone())
+            .service(send_market_data)
+            .service(submit_order)     
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 
+/*    
+    // Input
+    loop {
+        let mut book = order_book.write().unwrap();
+        incoming_orders.push_back(Order::new_order());
+        book.incoming_orders_processor(&mut incoming_orders,&mut list_matches);
+        println!("{:#?}",book.top_book);
+    }
+*/
+    
 
 }

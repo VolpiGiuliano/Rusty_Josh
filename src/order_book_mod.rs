@@ -1,9 +1,11 @@
 use std::collections::{VecDeque};
 use std::usize;
+use serde::Serialize;
 
 
 pub const ORDER_BOOK_LENGTH: usize = 10;
 
+#[derive(Serialize)]
 #[derive(Clone,Copy, Debug)]
 /// - Side: Bid=true - Ask=false
 /// - modify: Starts at 0 and at every modification is added by 1
@@ -60,7 +62,8 @@ pub struct ResultMatch{
 /// The 3 and 4 are useless if the trades are made only during the new order handling
 ///  
 /// *It can be useless, consider to eliminate it*
-#[derive(Debug)]
+#[derive(Serialize)]
+#[derive(Debug,Clone)]
 pub struct BestAB{
     pub ask_p:usize,
     pub bid_p:usize,
@@ -92,7 +95,8 @@ impl BestAB {
 /// ## Funtions
 /// - new() -> OrderBook: Usefull to initialize it
 /// 
-#[derive(Debug)]
+#[derive(Serialize)]
+#[derive(Debug,Clone)]
 pub struct OrderBook {
     pub ask: [Box<VecDeque<Order>>; ORDER_BOOK_LENGTH],
     pub bid: [Box<VecDeque<Order>>; ORDER_BOOK_LENGTH],
