@@ -125,6 +125,8 @@ pub struct Match{
 - Limit ✅ 
 - Market ✅ 
 - Hidden ❌
+- Modify ❌
+  
 ## Modifications
 Rules:
 
@@ -179,3 +181,11 @@ Side
 - false -> Ask
 
 ![Overview](/img/Overview.png)
+
+# Testing
+Post new Order
+```bash
+curl -X POST http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d '{"id": 88,"price": 2,"size": 10,"side": true,"o_type": 1}'
+```
+Site where one can retrice the orderbook 
+http://127.0.0.1:8080/data 

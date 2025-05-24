@@ -1,10 +1,9 @@
 use std::collections::{VecDeque};
 use std::usize;
-use std::sync::{Arc};//, RwLock};
+use std::sync::{Arc};
 
 use serde::Serialize;
 use tokio::sync::RwLock;
-
 
 
 pub const ORDER_BOOK_LENGTH: usize = 10;
@@ -373,8 +372,6 @@ impl OrderBook {
                     return matches_vec;
 
                 }
-                
-
 
             } else {
                 self.inserter(new_order);
